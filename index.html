@@ -1,144 +1,256 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <title>Veux-tu être ma Valentine ? 💕</title>
     <script>
         tailwind.config = {
-            theme: { extend: { animation: { 'pulse-fast': 'pulse 1s infinite' } } }
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'dancing': ['"Dancing Script"', 'cursive'],
+                        'poppins': ['"Poppins"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
         }
     </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            overflow: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            animation: float-up 10s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes float-up {
+            from {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(-10vh) scale(1.5);
+                opacity: 0.8;
+            }
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-pink-300 flex flex-col justify-center items-center text-white font-sans p-4 cursor-auto">
-    
+
+<body
+    class="min-h-screen flex flex-col justify-center items-center text-white font-poppins p-4 overflow-hidden selection:bg-pink-400 selection:text-white">
+
+    <!-- Audio element -->
+    <audio id="bgMusic" loop>
+        <source src="musiqueFond.mpeg" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Floating Hearts Background Container -->
+    <div id="heartsContainer" class="fixed inset-0 pointer-events-none z-0"></div>
+
     <!-- Popup nom -->
-    <div id="namePopup" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="bg-white/95 backdrop-blur-xl rounded-3xl p-6 md:p-8 max-w-sm w-11/12 mx-4 text-center shadow-2xl animate-pulse">
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 md:mb-6">Surprise !!!🙃</h2>
-        <input type="text" id="userName" placeholder="Ton prénom s'il te plaît..." 
-       class="w-full px-4 md:px-6 py-3 md:py-4 text-base md:text-lg text-gray-800 border-2 border-pink-200 rounded-2xl focus:border-pink-400 focus:outline-none text-center font-semibold mb-4 md:mb-6 bg-white shadow-inner">
-            <button onclick="startValentine()" class="px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-2xl font-bold text-base md:text-lg hover:scale-105 transition-all duration-200">
-                C'est parti !
+    <div id="namePopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div
+            class="glass rounded-3xl p-8 max-w-md w-full mx-4 text-center transform hover:scale-[1.02] transition-all duration-300">
+            <h2 class="text-3xl md:text-4xl font-dancing font-bold text-rose-600 mb-6 drop-shadow-sm">Surprise !!! 💌
+            </h2>
+            <div class="space-y-6">
+                <input type="text" id="userName" placeholder="Ton joli prénom..."
+                    class="w-full px-6 py-4 text-lg text-gray-700 bg-white/80 border-2 border-pink-100 rounded-2xl focus:border-rose-400 focus:ring-4 focus:ring-rose-200 focus:outline-none transition-all placeholder:text-gray-400 text-center font-medium shadow-inner">
+
+                <button onclick="startValentine()"
+                    class="w-full py-4 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-2xl font-bold text-xl shadow-lg hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 active:scale-95">
+                    Découvrir ❤️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu principal (caché au début) -->
+    <div id="mainContent" class="hidden text-center z-10 w-full max-w-4xl px-4">
+        <h1 id="dynamicTitle"
+            class="text-4xl sm:text-5xl md:text-7xl font-dancing font-bold leading-tight mb-16 text-rose-600 drop-shadow-md animate-float">
+            <span id="nameDisplay"
+                class="bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent"></span>, <br>
+            <span class="text-2xl sm:text-4xl md:text-5xl text-gray-800 mt-4 block font-poppins">Veux-tu être ma
+                Valentine ? 🫣🌹</span>
+        </h1>
+
+        <div class="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 relative h-32 md:h-auto">
+            <button id="oui"
+                class="px-10 py-4 text-xl md:text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-full shadow-xl shadow-green-400/30 hover:shadow-green-400/50 hover:scale-110 transition-all duration-300 z-20 min-w-[160px]">
+                OUI 😍
+            </button>
+
+            <button id="non"
+                class="px-10 py-4 text-xl md:text-2xl font-bold bg-white text-gray-500 rounded-full shadow-lg border border-gray-100 hover:bg-gray-50 transition-all duration-300 z-20 min-w-[160px] absolute md:static">
+                Non 😒
             </button>
         </div>
     </div>
-    
-    <!-- Titre  -->
-    <h1 id="dynamicTitle" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-black font-bold mb-8 md:mb-12 drop-shadow-2xl animate-pulse hidden text-center px-4">
-        <span id="nameDisplay"></span>, veux-tu être ma Valentine ?🥹👉🏾👈🏾
-    </h1>
-    
-    <!-- Boutons  -->
-    <button id="oui" 
-        class="fixed px-6 md:px-8 py-4 md:py-6 text-lg md:text-xl font-bold mt-8 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-full shadow-2xl hover:scale-125 transition-all duration-300 z-20 min-w-[120px] md:min-w-[140px] hover:shadow-pink-500/50 hidden">
-        Oui 😍
-    </button>
-    
-    <button id="non" 
-        class="fixed px-6 md:px-8 py-4 md:py-6 text-lg md:text-xl font-bold mt-8 bg-gray-200 text-gray-800 rounded-full shadow-xl hover:scale-90 transition-all duration-200 z-10 min-w-[120px] md:min-w-[140px] hidden">
-        Non 🙄
-    </button>
-    
+
     <!-- Succès -->
-    <div id="success" class="fixed inset-0 bg-black/80 flex flex-col justify-center items-center z-30 hidden px-4">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3Y2aWoxeHFnOGF5cGFlYW92cDJhY2IydGd4d3U2M2Z5Z2l2eDByeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/u8u0R51ND9L2/giphy.gif" alt="Succès !" class="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto mb-6 md:mb-8 animate-bounce">
-        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-yellow-400 to-pink-500 bg-clip-text text-transparent drop-shadow-2xl animate-pulse text-center">
-            Woooww Superrr ! ❤️‍🩹
-        </h2>
+    <div id="success"
+        class="fixed inset-0 z-50 hidden flex flex-col justify-center items-center bg-black/60 backdrop-blur-md px-4">
+        <div class="glass p-8 rounded-3xl text-center max-w-2xl w-full animate-[bounce_1s_infinite]">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3Y2aWoxeHFnOGF5cGFlYW92cDJhY2IydGd4d3U2M2Z5Z2l2eDByeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/u8u0R51ND9L2/giphy.gif"
+                alt="Succès !" class="w-full max-w-sm mx-auto rounded-2xl shadow-2xl mb-8 border-4 border-white">
+
+            <h2
+                class="text-4xl md:text-6xl font-dancing font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-rose-500 drop-shadow-sm">
+                Yeeesss ! Je le savais ! ❤️‍🔥
+            </h2>
+            <p class="mt-4 text-white text-lg md:text-xl font-medium opacity-90">Prépare-toi pour une surprise...</p>
+        </div>
     </div>
 
     <script>
         const namePopup = document.getElementById('namePopup');
-        const dynamicTitle = document.getElementById('dynamicTitle');
+        const mainContent = document.getElementById('mainContent');
         const nameDisplay = document.getElementById('nameDisplay');
         const userNameInput = document.getElementById('userName');
         const ouiBtn = document.getElementById('oui');
         const nonBtn = document.getElementById('non');
         const success = document.getElementById('success');
+        const bgMusic = document.getElementById('bgMusic');
+        const heartsContainer = document.getElementById('heartsContainer');
 
-        // Popup nom au chargement
+        // Générer des cœurs flottants
+        function createHearts() {
+            const symbols = ['❤️', '💖', '💝', '💕', '🌹'];
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 3 + 7 + 's';
+                heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+                heartsContainer.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 10000);
+            }, 300);
+        }
+
         window.addEventListener('load', () => {
-            namePopup.classList.remove('hidden');
             userNameInput.focus();
+            createHearts();
         });
 
-        // Démarrer avec le nom
+        // Démarrer avec le nom + musique
         function startValentine() {
             const name = userNameInput.value.trim();
             if (name === '') {
-                alert('Entre ton prénom stp 💕');
+                userNameInput.classList.add('animate-shake');
+                setTimeout(() => userNameInput.classList.remove('animate-shake'), 500);
                 return;
             }
-            
-            // Cache popup, montre titre personnalisé + boutons
-            namePopup.style.display = 'none';
-            nameDisplay.textContent = name;
-            dynamicTitle.classList.remove('hidden');
-            ouiBtn.classList.remove('hidden');
-            nonBtn.classList.remove('hidden');
-            
-            // Position initiale boutons (responsive)
-            const isMobile = window.innerWidth < 768;
-            const ouiWidth = isMobile ? 120 : 140;
-            const spacing = isMobile ? 10 : 20;
-            
-            ouiBtn.style.left = `calc(50% - ${ouiWidth + spacing}px)`;
-            ouiBtn.style.top = 'calc(50% + 30px)';
-            nonBtn.style.left = `calc(50% + ${spacing}px)`;
-            nonBtn.style.top = 'calc(50% + 30px)';
+
+            // Audio play attempt
+            bgMusic.play().catch(e => console.log('Autoplay prevented:', e));
+            bgMusic.volume = 0.5;
+
+            // Transition
+            namePopup.style.opacity = '0';
+            setTimeout(() => {
+                namePopup.style.display = 'none';
+                mainContent.classList.remove('hidden');
+                nameDisplay.textContent = name;
+
+                // Positionnement initial du bouton Non (pour mobile)
+                if (window.innerWidth < 768) {
+                    nonBtn.style.top = '140px'; // Décalage pour pas chevaucher oui
+                }
+            }, 500);
         }
 
-        // Fonction pour déplacer le bouton Non
-        function moveNonButton() {
-            const isMobile = window.innerWidth < 768;
-            const buttonWidth = isMobile ? 120 : 180;
-            const maxX = window.innerWidth - buttonWidth;
-            const maxY = window.innerHeight - buttonWidth;
-            const newX = Math.random() * maxX;
-            const newY = Math.random() * maxY;
-            nonBtn.style.left = newX + 'px';
-            nonBtn.style.top = newY + 'px';
+        // Logique bouton Non (fuite intelligente)
+        function moveNonButton(e) {
+            // Calculer des nouvelles coordonnées aléatoires dans la fenêtre visible
+            const margin = 50; // Marge de sécurité
+            const maxX = window.innerWidth - nonBtn.offsetWidth - margin;
+            const maxY = window.innerHeight - nonBtn.offsetHeight - margin;
+
+            const x = Math.max(margin, Math.random() * maxX);
+            const y = Math.max(margin, Math.random() * maxY);
+
+            // Important : on passe en 'fixed' pour que les coordonnées soient relatives à l'écran
+            nonBtn.style.position = 'fixed';
+            nonBtn.style.left = `${x}px`;
+            nonBtn.style.top = `${y}px`;
+            nonBtn.style.zIndex = '50'; // S'assure qu'il reste au-dessus
+
+            // Faire grossir le OUI
+            const currentScale = parseFloat(ouiBtn.style.transform?.replace('scale(', '')?.replace(')', '') || 1);
+            const newScale = Math.min(currentScale + 0.15, 3);
+            ouiBtn.style.transform = `scale(${newScale})`;
         }
 
-        // Fonction pour agrandir le bouton Oui
-        function growOuiButton() {
-            const currentScale = parseFloat(ouiBtn.getAttribute('data-scale') || 1);
-            if (currentScale < 2) {
-                const newScale = Math.min(currentScale + 0.2, 2);
-                ouiBtn.setAttribute('data-scale', newScale);
-                ouiBtn.style.transform = `scale(${newScale})`;
-            }
-        }
-
-        // Bouton Non fuit au survol (desktop)
         nonBtn.addEventListener('mouseenter', moveNonButton);
-
-        // Bouton Non fuit au clic (mobile/tablette)
-        nonBtn.addEventListener('click', (e) => {
-            e.preventDefault();
+        nonBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Empêche le click sur mobile
             moveNonButton();
-            growOuiButton();
         });
 
-        // Bouton Oui grandit au survol (desktop)
-        ouiBtn.addEventListener('mouseenter', growOuiButton);
-
-        // Bouton Oui grandit au toucher (mobile/tablette)
-        ouiBtn.addEventListener('touchstart', growOuiButton);
-
-        // Succès au clic sur Oui
+        // Succès
         ouiBtn.addEventListener('click', () => {
-            document.querySelectorAll('button').forEach(b => b.style.display = 'none');
-            dynamicTitle.style.display = 'none';
             success.classList.remove('hidden');
+            confettiEffect();
         });
 
-        // Enter pour valider nom
+        // Petite animation shake CSS
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            .animate-shake { animation: shake 0.3s ease-in-out; }
+        `;
+        document.head.appendChild(style);
+
+        // Clavier Enter
         userNameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') startValentine();
         });
+
+        function confettiEffect() {
+            // Simple confetti burst could be added here or just rely on the GIF
+        }
     </script>
 </body>
+
 </html>

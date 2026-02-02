@@ -11,7 +11,7 @@ Une petite application web interactive et moderne pour faire une demande de Sain
 
 ## Tester le projet
 Vous pouvez tester le projet via ce lien : 
-[https://github.com/sokevinjonas/veux-tu-etre-ma-ursula.git](https://github.com/sokevinjonas/veux-tu-etre-ma-ursula.git)
+[https://sokevinjonas.github.io/veux-tu-etre-ma-ursula](https://sokevinjonas.github.io/veux-tu-etre-ma-ursula)
 
 ## Installation locale
 1. Clonez ce dépôt.
